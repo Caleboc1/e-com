@@ -1,0 +1,329 @@
+/* ============================================
+   CartDrawer — slide-out right drawer
+   ============================================ */
+
+/* ---------- BACKDROP ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 37, 32, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+
+.backdropOpen {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+
+/* ---------- DRAWER ---------- */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 440px;
+  max-width: 100%;
+  background: var(--white);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 32px rgba(44, 37, 32, 0.12);
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.75rem 2rem 1.5rem;
+  border-bottom: 0.5px solid var(--linen-dark);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--charcoal);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.itemCount {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.closeBtn {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--earth);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 200;
+  transition: color 0.2s;
+}
+.closeBtn:hover {
+  color: var(--charcoal);
+}
+
+/* ---------- BODY ---------- */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.body::-webkit-scrollbar {
+  width: 4px;
+}
+.body::-webkit-scrollbar-thumb {
+  background: var(--clay);
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+.empty p {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ---------- ITEMS ---------- */
+.items {
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 0.5px solid var(--linen-dark);
+}
+
+.itemImage {
+  aspect-ratio: 3 / 4;
+  position: relative;
+  overflow: hidden;
+  background: var(--linen);
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.itemName {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--charcoal);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.removeBtn {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 300;
+  white-space: nowrap;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.removeBtn:hover {
+  color: var(--charcoal);
+}
+
+.itemMeta {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: auto;
+  padding-bottom: 0.75rem;
+}
+.itemMeta span[aria-hidden="true"] {
+  color: var(--clay);
+}
+
+.itemFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ---------- QUANTITY CONTROL ---------- */
+.qtyControl {
+  display: flex;
+  align-items: center;
+  border: 0.5px solid var(--clay);
+}
+
+.qtyControl button {
+  width: 26px;
+  height: 26px;
+  background: none;
+  border: none;
+  color: var(--earth);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.qtyControl button:hover {
+  background: var(--linen);
+  color: var(--charcoal);
+}
+
+.qtyControl span {
+  min-width: 26px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--charcoal);
+  font-weight: 300;
+}
+
+.itemPrice {
+  font-size: 0.85rem;
+  color: var(--earth);
+  font-weight: 400;
+}
+
+/* ---------- FOOTER (subtotal + checkout) ---------- */
+.footer {
+  border-top: 0.5px solid var(--linen-dark);
+  padding: 1.5rem 2rem 2rem;
+  background: var(--white);
+}
+
+.subtotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.subtotalLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--earth);
+  font-weight: 400;
+}
+
+.subtotalAmount {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--charcoal);
+}
+
+.shippingNote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.checkoutBtn {
+  width: 100%;
+  padding: 1.1rem;
+  background: var(--charcoal);
+  color: var(--white);
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-weight: 300;
+  cursor: pointer;
+  transition: background 0.25s;
+  margin-bottom: 0.75rem;
+}
+.checkoutBtn:hover {
+  background: var(--earth);
+}
+
+.viewBagBtn,
+.continueBtn {
+  width: 100%;
+  padding: 0.85rem;
+  background: transparent;
+  color: var(--earth);
+  border: 0.5px solid var(--clay);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.viewBagBtn:hover,
+.continueBtn:hover {
+  background: var(--linen);
+  color: var(--charcoal);
+  border-color: var(--charcoal);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 500px) {
+  .drawer {
+    width: 100%;
+  }
+  .header {
+    padding: 1.25rem 1.25rem 1rem;
+  }
+  .item {
+    padding: 1.25rem;
+    grid-template-columns: 80px 1fr;
+    gap: 0.85rem;
+  }
+  .footer {
+    padding: 1.25rem;
+  }
+}

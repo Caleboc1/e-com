@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: "Cormorant Garamond", Georgia, serif;
+    --font-body: "Jost", system-ui, -apple-system, sans-serif;
+    --background: 36 33% 97%;
+    --foreground: 24 16% 15%;
+    --card: 36 33% 97%;
+    --card-foreground: 24 16% 15%;
+    --primary: 24 16% 15%;
+    --primary-foreground: 36 33% 97%;
+    --secondary: 37 36% 92%;
+    --secondary-foreground: 24 16% 15%;
+    --muted: 36 28% 92%;
+    --muted-foreground: 26 10% 50%;
+    --accent: 34 36% 64%;
+    --accent-foreground: 24 16% 15%;
+    --border: 36 26% 88%;
+    --input: 34 30% 69%;
+    --ring: 24 16% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white font-body text-charcoal antialiased;
+    letter-spacing: 0.02em;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .section-tag {
+    @apply mb-4 block text-[0.65rem] uppercase tracking-[0.25em] text-clay-dark;
+  }
+
+  .section-title {
+    @apply font-display text-4xl font-light leading-none text-charcoal md:text-5xl;
+  }
+
+  .copy-muted {
+    @apply text-sm leading-8 text-text-muted;
+  }
+
+  .linen-grid {
+    background-image: repeating-linear-gradient(
+      105deg,
+      transparent 0,
+      transparent 40px,
+      rgba(255, 255, 255, 0.06) 40px,
+      rgba(255, 255, 255, 0.06) 41px
+    );
+  }
+}
