@@ -142,9 +142,9 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-5 text-[0.72rem] uppercase tracking-[0.15em] text-earth">
-          <Link href="/admin" className="hidden transition-colors hover:text-charcoal md:block">
+          {/* <Link href="/admin" className="hidden transition-colors hover:text-charcoal md:block">
             Admin
-          </Link>
+          </Link> */}
           <button
             type="button"
             onClick={openCart}
