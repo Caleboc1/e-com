@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { useCart } from "@/components/store/cart-provider";
@@ -17,10 +18,12 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/product/${product.slug}`} className="absolute inset-0 z-10" aria-label={product.name} />
       <div className="relative aspect-[3/4] overflow-hidden bg-linen">
         {primaryView?.imageUrl ? (
-          <img
+          <Image
             src={primaryView.imageUrl}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
           />
         ) : (
           <>

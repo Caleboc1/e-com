@@ -1,24 +1,98 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/toaster";
 import { upsertProductAction } from "@/lib/actions";
-import type { Product } from "@/types";
+import type { ActionResult, Product } from "@/types";
 
 const defaultSizeOptions = ["XS", "S", "M", "L", "XL"];
 const defaultKidSizeOptions = ["2Y", "4Y", "6Y", "8Y", "10Y"];
 
 type SizeRow = { id: string; value: string };
-type ColorRow = { id: string; name: string; swatch: string };
+type ColorRow = { id: string; name: string };
 type ViewRow = { id: string; label: string; existingImageUrl?: string };
+
+const initialActionState: ActionResult = {
+  status: "idle"
+};
 
 function createRowId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+const colorKeywordMap: Record<string, string> = {
+  "burnt earth": "#8B3A2A",
+  "indigo night": "#1E2E52",
+  "forest dusk": "#2A4A2E",
+  "faded rose": "#8B4A55",
+  "saffron sun": "#9A6B10",
+  "ash & smoke": "#3A3530",
+  "ash and smoke": "#3A3530",
+  natural: "#D8CFBE",
+  cream: "#F5E6CC",
+  beige: "#DCC7A1",
+  tan: "#C19A6B",
+  brown: "#8B5A2B",
+  rust: "#B7410E",
+  terracotta: "#C96B4B",
+  clay: "#A66A4C",
+  coral: "#FF7F50",
+  red: "#C0392B",
+  burgundy: "#800020",
+  maroon: "#6B1F2A",
+  pink: "#E8A0BF",
+  blush: "#E8C7C8",
+  rose: "#B76E79",
+  peach: "#F4A88B",
+  orange: "#E67E22",
+  yellow: "#E2B93B",
+  gold: "#C9A227",
+  olive: "#708238",
+  green: "#2E8B57",
+  mint: "#98D8C8",
+  teal: "#2C7A7B",
+  blue: "#3B82F6",
+  navy: "#1F2A44",
+  indigo: "#3F51B5",
+  purple: "#7E57C2",
+  lavender: "#B497D6",
+  lilac: "#C8A2C8",
+  white: "#F8F8F5",
+  grey: "#8C8C8C",
+  gray: "#8C8C8C",
+  charcoal: "#36454F",
+  black: "#1F1F1F"
+};
+
+function normalizeColorName(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function resolveSwatchColor(name: string) {
+  const normalizedName = normalizeColorName(name);
+
+  if (!normalizedName) {
+    return "#D8CFBE";
+  }
+
+  const mapped = colorKeywordMap[normalizedName];
+
+  if (mapped) {
+    return mapped;
+  }
+
+  if (typeof CSS !== "undefined" && CSS.supports("color", normalizedName)) {
+    return normalizedName;
+  }
+
+  return "#D8CFBE";
 }
 
 function getInitialFormState(product?: Product | null) {
@@ -31,10 +105,9 @@ function getInitialFormState(product?: Product | null) {
     product?.colors.length
       ? product.colors.map((color) => ({
           id: createRowId("color"),
-          name: color.name,
-          swatch: color.swatchColor
+          name: color.name
         }))
-      : [{ id: createRowId("color"), name: "", swatch: "#D8CFBE" }];
+      : [{ id: createRowId("color"), name: "" }];
   const views =
     product?.views.length
       ? product.views.map((view) => ({
@@ -59,6 +132,9 @@ export function ProductEditorForm({
   submitLabel?: string;
   onCancel?: () => void;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const { showToast } = useToast();
+  const [actionState, formAction, isPending] = useActionState(upsertProductAction, initialActionState);
   const [category, setCategory] = useState("women");
   const [sizes, setSizes] = useState<SizeRow[]>([]);
   const [colors, setColors] = useState<ColorRow[]>([]);
@@ -72,12 +148,36 @@ export function ProductEditorForm({
     setViews(next.views);
   }, [initialProduct]);
 
+  useEffect(() => {
+    if (actionState.status === "idle" || !actionState.message) {
+      return;
+    }
+
+    showToast({
+      title: actionState.message,
+      variant: actionState.status === "success" ? "success" : "error"
+    });
+
+    if (actionState.status === "success") {
+      if (initialProduct) {
+        onCancel?.();
+      } else {
+        formRef.current?.reset();
+        const next = getInitialFormState(null);
+        setCategory(next.category);
+        setSizes(next.sizes);
+        setColors(next.colors);
+        setViews(next.views);
+      }
+    }
+  }, [actionState, initialProduct, onCancel, showToast]);
+
   function updateSizeRow(id: string, value: string) {
     setSizes((current) => current.map((row) => (row.id === id ? { ...row, value } : row)));
   }
 
-  function updateColorRow(id: string, key: "name" | "swatch", value: string) {
-    setColors((current) => current.map((row) => (row.id === id ? { ...row, [key]: value } : row)));
+  function updateColorRow(id: string, value: string) {
+    setColors((current) => current.map((row) => (row.id === id ? { ...row, name: value } : row)));
   }
 
   function updateViewRow(id: string, value: string) {
@@ -97,7 +197,7 @@ export function ProductEditorForm({
   }
 
   return (
-    <form action={upsertProductAction} className="space-y-6" encType="multipart/form-data">
+    <form ref={formRef} action={formAction} className="space-y-6" encType="multipart/form-data">
       <input type="hidden" name="productId" value={initialProduct?.id ?? ""} />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -191,13 +291,13 @@ export function ProductEditorForm({
         <div className="flex items-center justify-between">
           <div>
             <p className="font-display text-2xl font-light">Colours</p>
-            <p className="text-sm text-text-muted">Add each colour with a simple name and swatch.</p>
+            <p className="text-sm text-text-muted">Name the colour and pick the exact swatch visually.</p>
           </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setColors((current) => [...current, { id: createRowId("color"), name: "", swatch: "#D8CFBE" }])}
+            onClick={() => setColors((current) => [...current, { id: createRowId("color"), name: "" }])}
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Colour
@@ -205,20 +305,19 @@ export function ProductEditorForm({
         </div>
         <div className="space-y-4">
           {colors.map((row) => (
-            <div key={row.id} className="grid gap-3 md:grid-cols-[1fr_180px_60px]">
+            <div key={row.id} className="grid gap-3 md:grid-cols-[1fr_76px_60px]">
               <Input
                 name="colorName"
                 value={row.name}
                 placeholder="Burnt Earth"
-                onChange={(event) => updateColorRow(row.id, "name", event.target.value)}
+                onChange={(event) => updateColorRow(row.id, event.target.value)}
               />
-              <Input
-                name="colorSwatch"
-                value={row.swatch}
-                type="text"
-                placeholder="#8B3A2A"
-                onChange={(event) => updateColorRow(row.id, "swatch", event.target.value)}
+              <div
+                className="h-12 w-full border border-clay"
+                style={{ background: resolveSwatchColor(row.name) }}
+                aria-label={`${row.name || "Product"} colour preview`}
               />
+              <input type="hidden" name="colorSwatch" value={resolveSwatchColor(row.name)} />
               <Button
                 type="button"
                 variant="ghost"
@@ -262,7 +361,7 @@ export function ProductEditorForm({
                 <Input name="viewImage" type="file" accept="image/*" />
                 <input type="hidden" name="existingViewImageUrl" value={row.existingImageUrl ?? ""} />
                 {row.existingImageUrl ? (
-                  <img src={row.existingImageUrl} alt={row.label} className="h-16 w-16 object-cover" />
+                  <Image src={row.existingImageUrl} alt={row.label} width={64} height={64} className="h-16 w-16 object-cover" />
                 ) : null}
               </div>
               <Button
@@ -306,7 +405,9 @@ export function ProductEditorForm({
       </label>
 
       <div className="flex gap-3">
-        <Button type="submit">{submitLabel}</Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Saving..." : submitLabel}
+        </Button>
         {onCancel ? (
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel

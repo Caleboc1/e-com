@@ -3,11 +3,8 @@ import { redirect } from "next/navigation";
 import { AdminDashboardClient } from "@/components/admin/admin-dashboard-client";
 import { ProductEditorForm } from "@/components/admin/product-editor-form";
 import { SignOutButton } from "@/components/admin/sign-out-button";
-import { Button } from "@/components/ui/button";
+import { StoreSettingsForm } from "@/components/admin/store-settings-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { updateStoreSettingsAction } from "@/lib/actions";
 import { getAdminSession } from "@/lib/auth";
 import { getDashboardMetrics, getOrders, getProducts, getStoreSettings } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
@@ -67,25 +64,7 @@ export default async function AdminPage() {
               <CardTitle>Store Currency</CardTitle>
             </CardHeader>
             <CardContent>
-              <form action={updateStoreSettingsAction} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="usdRate">NGN per 1 USD</Label>
-                  <Input
-                    id="usdRate"
-                    name="usdRate"
-                    type="number"
-                    min="1"
-                    step="0.01"
-                    defaultValue={storeSettings.usdRate}
-                    required
-                  />
-                </div>
-                <p className="text-sm leading-7 text-text-muted">
-                  Visitors detected outside Nigeria will see converted USD prices. You can update this rate any time
-                  from here.
-                </p>
-                <Button type="submit">Update USD Rate</Button>
-              </form>
+              <StoreSettingsForm usdRate={storeSettings.usdRate} />
             </CardContent>
           </Card>
 

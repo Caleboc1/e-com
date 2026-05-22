@@ -100,3 +100,9 @@ export type StoreCurrency = "NGN" | "USD";
 export interface StoreSettings {
   usdRate: number;
 }
+
+export interface ActionResult {
+  status: "idle" | "success" | "error";
+  message?: string;
+  timestamp?: number;
+}

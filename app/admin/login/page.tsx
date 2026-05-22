@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminSession } from "@/lib/auth";
 
 export default async function AdminLoginPage() {

@@ -8,6 +8,27 @@ import { ProductCategory, ProductPrint } from "@prisma/client";
 import { getAdminSession } from "@/lib/auth";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import type { ActionResult } from "@/types";
+
+const idleResult: ActionResult = {
+  status: "idle"
+};
+
+function actionSuccess(message: string): ActionResult {
+  return {
+    status: "success",
+    message,
+    timestamp: Date.now()
+  };
+}
+
+function actionError(message: string): ActionResult {
+  return {
+    status: "error",
+    message,
+    timestamp: Date.now()
+  };
+}
 
 async function saveUploadedFile(file: File, prefix: string) {
   if (!file || file.size === 0) {
@@ -29,15 +50,16 @@ function getDefaultPattern(print: ProductPrint) {
   return print === ProductPrint.adire ? "hex" : "cross";
 }
 
-export async function upsertProductAction(formData: FormData) {
+export async function upsertProductAction(previousState: ActionResult = idleResult, formData: FormData): Promise<ActionResult> {
+  void previousState;
   const session = await getAdminSession();
 
   if (!session) {
-    return;
+    return actionError("You need to sign in again to manage products.");
   }
 
   if (!hasDatabaseUrl()) {
-    return;
+    return actionError("Database connection is not configured.");
   }
 
   const productId = String(formData.get("productId") ?? "").trim();
@@ -141,13 +163,37 @@ export async function upsertProductAction(formData: FormData) {
     views: normalizedViews
   };
 
+  let previousSlug: string | null = null;
+
   if (productId) {
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId
+      },
+      select: {
+        slug: true
+      }
+    });
+
+    previousSlug = existingProduct?.slug ?? null;
+
     await prisma.product.update({
       where: {
         id: productId
       },
       data: product
     });
+
+    revalidatePath("/");
+    revalidatePath("/shop");
+    revalidatePath("/admin");
+    revalidatePath(`/product/${product.slug}`);
+
+    if (previousSlug && previousSlug !== product.slug) {
+      revalidatePath(`/product/${previousSlug}`);
+    }
+
+    return actionSuccess(`Updated ${product.name}.`);
   } else {
     await prisma.product.upsert({
       where: {
@@ -156,25 +202,38 @@ export async function upsertProductAction(formData: FormData) {
       update: product,
       create: product
     });
-  }
 
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath("/admin");
+    revalidatePath("/");
+    revalidatePath("/shop");
+    revalidatePath("/admin");
+    revalidatePath(`/product/${product.slug}`);
+
+    return actionSuccess(`Added ${product.name} to the store.`);
+  }
 }
 
-export async function deleteProductAction(formData: FormData) {
+export async function deleteProductAction(previousState: ActionResult = idleResult, formData: FormData): Promise<ActionResult> {
+  void previousState;
   const session = await getAdminSession();
 
   if (!session || !hasDatabaseUrl()) {
-    return;
+    return actionError("Unable to connect to the database right now.");
   }
 
   const productId = String(formData.get("productId") ?? "").trim();
 
   if (!productId) {
-    return;
+    return actionError("Missing product id.");
   }
+
+  const existingProduct = await prisma.product.findUnique({
+    where: {
+      id: productId
+    },
+    select: {
+      slug: true
+    }
+  });
 
   await prisma.product.delete({
     where: {
@@ -185,19 +244,29 @@ export async function deleteProductAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath("/admin");
+
+  if (existingProduct?.slug) {
+    revalidatePath(`/product/${existingProduct.slug}`);
+  }
+
+  return actionSuccess(`Deleted ${existingProduct?.slug ?? "product"}.`);
 }
 
-export async function updateStoreSettingsAction(formData: FormData) {
+export async function updateStoreSettingsAction(
+  previousState: ActionResult = idleResult,
+  formData: FormData
+): Promise<ActionResult> {
+  void previousState;
   const session = await getAdminSession();
 
   if (!session || !hasDatabaseUrl()) {
-    return;
+    return actionError("Unable to connect to the database right now.");
   }
 
   const usdRate = Number(formData.get("usdRate") ?? 0);
 
   if (!Number.isFinite(usdRate) || usdRate <= 0) {
-    return;
+    return actionError("Enter a valid USD rate.");
   }
 
   await prisma.storeSettings.upsert({
@@ -217,4 +286,6 @@ export async function updateStoreSettingsAction(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath("/product/[slug]", "page");
   revalidatePath("/admin");
+
+  return actionSuccess("Store settings updated.");
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ProductCard } from "@/components/store/product-card";
 import type { Product, ProductCategory, ProductPrint } from "@/types";
@@ -29,10 +29,24 @@ export function ShopClient({
   );
   const [sortBy, setSortBy] = useState<(typeof sortOptions)[number]["value"]>("newest");
 
+  useEffect(() => {
+    setSelectedCategories(initialCategory ? new Set([initialCategory]) : new Set());
+  }, [initialCategory]);
+
+  useEffect(() => {
+    setSelectedPrints(initialPrint ? new Set([initialPrint]) : new Set());
+  }, [initialPrint]);
+
   function toggleSetValue(setter: React.Dispatch<React.SetStateAction<Set<string>>>, value: string) {
     setter((current) => {
       const next = new Set(current);
-      next.has(value) ? next.delete(value) : next.add(value);
+
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        next.add(value);
+      }
+
       return next;
     });
   }

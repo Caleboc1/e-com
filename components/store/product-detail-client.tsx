@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,6 +20,8 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
   const currentView = product.views.find((view) => view.id === activeView) ?? product.views[0];
   const currentColor = product.colors.find((color) => color.id === selectedColor) ?? product.colors[0];
+  const displaySwatch = currentColor?.swatchColor ?? currentView?.swatchColor ?? product.swatch;
+  const displayPattern = currentColor?.pattern ?? currentView?.pattern ?? product.pattern;
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 pb-24 md:px-12">
@@ -45,11 +48,17 @@ export function ProductDetailClient({ product }: { product: Product }) {
                 className={`relative aspect-[3/4] w-20 overflow-hidden border ${activeView === view.id ? "border-charcoal opacity-100" : "border-transparent opacity-60"} transition-opacity`}
               >
                 {view.imageUrl ? (
-                  <img src={view.imageUrl} alt={`${product.name} ${view.label}`} className="h-full w-full object-cover" />
+                  <Image
+                    src={view.imageUrl}
+                    alt={`${product.name} ${view.label}`}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                  />
                 ) : (
                   <>
-                    <div className="absolute inset-0" style={{ background: view.swatchColor }} />
-                    <AdirePattern variant={view.pattern} opacity={0.35} />
+                    <div className="absolute inset-0" style={{ background: displaySwatch }} />
+                    <AdirePattern variant={displayPattern} opacity={0.35} />
                   </>
                 )}
               </button>
@@ -58,11 +67,17 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
           <div className="relative aspect-[3/4] overflow-hidden bg-linen">
             {currentView?.imageUrl ? (
-              <img src={currentView.imageUrl} alt={`${product.name} ${currentView.label}`} className="h-full w-full object-cover" />
+              <Image
+                src={currentView.imageUrl}
+                alt={`${product.name} ${currentView.label}`}
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 60vw, 100vw"
+              />
             ) : (
               <>
-                <div className="absolute inset-0" style={{ background: currentView?.swatchColor ?? product.swatch }} />
-                <AdirePattern variant={currentView?.pattern ?? product.pattern} opacity={0.4} />
+                <div className="absolute inset-0" style={{ background: displaySwatch }} />
+                <AdirePattern variant={displayPattern} opacity={0.4} />
               </>
             )}
             <span className="absolute bottom-4 left-4 bg-black/20 px-3 py-2 text-[0.6rem] uppercase tracking-[0.25em] text-white/55 backdrop-blur">
@@ -95,9 +110,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   className={`relative h-11 w-11 overflow-hidden outline outline-1 outline-offset-4 transition-transform hover:scale-105 ${selectedColor === color.id ? "outline-charcoal" : "outline-transparent"}`}
                   style={{ background: color.swatchColor }}
                   onClick={() => setSelectedColor(color.id)}
-                >
-                  <AdirePattern variant={color.pattern} opacity={0.45} />
-                </button>
+                />
               ))}
             </div>
           </div>

@@ -1,20 +1,25 @@
 "use client";
 
 import { Eye, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useActionState, useEffect, useState } from "react";
 
 import { AdminModal } from "@/components/admin/admin-modal";
 import { ProductEditorForm } from "@/components/admin/product-editor-form";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from "@/components/ui/toaster";
 import { deleteProductAction } from "@/lib/actions";
 import { formatPrice } from "@/lib/utils";
-import type { OrderRecord, Product } from "@/types";
+import type { ActionResult, OrderRecord, Product } from "@/types";
 
 type ProductModalState =
   | { mode: "view"; product: Product }
   | { mode: "edit"; product: Product }
   | null;
+
+const initialActionState: ActionResult = {
+  status: "idle"
+};
 
 export function AdminDashboardClient({
   products,
@@ -86,20 +91,7 @@ function ProductListCard({
                     <IconButton label="Edit" onClick={() => onEdit(product)}>
                       <Pencil className="h-4 w-4" />
                     </IconButton>
-                    <form action={deleteProductAction}>
-                      <input type="hidden" name="productId" value={product.id} />
-                      <IconButton
-                        label="Delete"
-                        variant="danger"
-                        onClick={(event) => {
-                          if (!window.confirm(`Delete "${product.name}"?`)) {
-                            event.preventDefault();
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </IconButton>
-                    </form>
+                    <DeleteProductButton product={product} />
                   </div>
                 </TableCell>
               </TableRow>
@@ -108,6 +100,39 @@ function ProductListCard({
         </Table>
       </div>
     </div>
+  );
+}
+
+function DeleteProductButton({ product }: { product: Product }) {
+  const { showToast } = useToast();
+  const [actionState, formAction, isPending] = useActionState(deleteProductAction, initialActionState);
+
+  useEffect(() => {
+    if (actionState.status === "idle" || !actionState.message) {
+      return;
+    }
+
+    showToast({
+      title: actionState.message,
+      variant: actionState.status === "success" ? "success" : "error"
+    });
+  }, [actionState, showToast]);
+
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="productId" value={product.id} />
+      <IconButton
+        label={isPending ? "Deleting..." : "Delete"}
+        variant="danger"
+        onClick={(event) => {
+          if (isPending || !window.confirm(`Delete "${product.name}"?`)) {
+            event.preventDefault();
+          }
+        }}
+      >
+        <Trash2 className="h-4 w-4" />
+      </IconButton>
+    </form>
   );
 }
 
@@ -190,7 +215,15 @@ function ProductModal({
               {product.views.map((view) => (
                 <div key={view.id} className="overflow-hidden border border-linen-dark bg-linen">
                   {view.imageUrl ? (
-                    <img src={view.imageUrl} alt={`${product.name} ${view.label}`} className="aspect-[3/4] w-full object-cover" />
+                    <div className="relative aspect-[3/4] w-full">
+                      <Image
+                        src={view.imageUrl}
+                        alt={`${product.name} ${view.label}`}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                      />
+                    </div>
                   ) : (
                     <div className="aspect-[3/4] w-full" style={{ background: view.swatchColor }} />
                   )}

@@ -1,5 +1,5 @@
-import { cache } from "react";
-import type { Prisma } from "@prisma/client";
+import { unstable_noStore as noStore } from "next/cache";
+import { OrderStatus, type Prisma } from "@prisma/client";
 
 import { mockMetrics, mockOrders, mockProducts } from "@/lib/mock-data";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
@@ -55,7 +55,9 @@ function mapProductRow(row: {
   };
 }
 
-export const getProducts = cache(async (): Promise<Product[]> => {
+export async function getProducts(): Promise<Product[]> {
+  noStore();
+
   if (!hasDatabaseUrl()) {
     return mockProducts;
   }
@@ -70,13 +72,13 @@ export const getProducts = cache(async (): Promise<Product[]> => {
     return data.map((row) => mapProductRow(row));
   } catch (error) {
     console.error("Failed to fetch products via Prisma:", error);
-    return mockProducts;
+    return [];
   }
-});
+}
 
 export async function getFeaturedProducts() {
   const products = await getProducts();
-  return products.filter((product) => product.featured).slice(0, 4);
+  return products.slice(0, 4);
 }
 
 export async function getProductBySlug(slug: string) {
@@ -85,21 +87,58 @@ export async function getProductBySlug(slug: string) {
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
+  noStore();
+
   if (!hasDatabaseUrl()) {
     return mockMetrics;
   }
 
-  const [products, orders] = await Promise.all([getProducts(), getOrders()]);
+  try {
+    const [paidOrders, orderCount, inventoryTotals, lowStockCount] = await Promise.all([
+      prisma.order.aggregate({
+        where: {
+          status: OrderStatus.paid
+        },
+        _sum: {
+          amount: true
+        }
+      }),
+      prisma.order.count(),
+      prisma.product.aggregate({
+        _sum: {
+          inventory: true
+        }
+      }),
+      prisma.product.count({
+        where: {
+          inventory: {
+            lte: 8
+          }
+        }
+      })
+    ]);
 
-  return {
-    revenue: orders.filter((order) => order.status === "paid").reduce((sum, order) => sum + order.amount, 0),
-    orderCount: orders.length,
-    inventoryUnits: products.reduce((sum, product) => sum + product.inventory, 0),
-    lowStockCount: products.filter((product) => product.inventory <= 8).length
-  };
+    return {
+      revenue: paidOrders._sum.amount ?? 0,
+      orderCount,
+      inventoryUnits: inventoryTotals._sum.inventory ?? 0,
+      lowStockCount
+    };
+  } catch (error) {
+    console.error("Failed to fetch dashboard metrics via Prisma:", error);
+
+    return {
+      revenue: 0,
+      orderCount: 0,
+      inventoryUnits: 0,
+      lowStockCount: 0
+    };
+  }
 }
 
 export async function getOrders(): Promise<OrderRecord[]> {
+  noStore();
+
   if (!hasDatabaseUrl()) {
     return mockOrders;
   }
@@ -129,7 +168,7 @@ export async function getOrders(): Promise<OrderRecord[]> {
     }));
   } catch (error) {
     console.error("Failed to fetch orders via Prisma:", error);
-    return mockOrders;
+    return [];
   }
 }
 
@@ -137,7 +176,9 @@ const defaultStoreSettings: StoreSettings = {
   usdRate: 1600
 };
 
-export const getStoreSettings = cache(async (): Promise<StoreSettings> => {
+export async function getStoreSettings(): Promise<StoreSettings> {
+  noStore();
+
   if (!hasDatabaseUrl()) {
     return defaultStoreSettings;
   }
@@ -160,4 +201,4 @@ export const getStoreSettings = cache(async (): Promise<StoreSettings> => {
     console.error("Failed to fetch store settings via Prisma:", error);
     return defaultStoreSettings;
   }
-});
+}
