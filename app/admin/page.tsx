@@ -6,7 +6,7 @@ import { SignOutButton } from "@/components/admin/sign-out-button";
 import { StoreSettingsForm } from "@/components/admin/store-settings-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminSession } from "@/lib/auth";
-import { getDashboardMetrics, getOrders, getProducts, getStoreSettings } from "@/lib/store";
+import { getDashboardMetrics, getOrders, getProducts, getStoreSettings, getSubscribers } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
 
 export default async function AdminPage() {
@@ -16,11 +16,12 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  const [metrics, products, orders, storeSettings] = await Promise.all([
+  const [metrics, products, orders, storeSettings, subscribers] = await Promise.all([
     getDashboardMetrics(),
     getProducts(),
     getOrders(),
-    getStoreSettings()
+    getStoreSettings(),
+    getSubscribers()
   ]);
 
   return (
@@ -78,7 +79,7 @@ export default async function AdminPage() {
           </Card>
         </section>
 
-        <AdminDashboardClient products={products} orders={orders} />
+        <AdminDashboardClient products={products} orders={orders} subscribers={subscribers} />
       </div>
     </div>
   );

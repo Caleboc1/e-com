@@ -1,9 +1,10 @@
 import Link from "next/link";
 
 import { AdirePattern } from "@/components/store/adire-pattern";
+import { NewsletterSignupForm } from "@/components/store/newsletter-signup-form";
 import { ProductCard } from "@/components/store/product-card";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { TICKER_ITEMS } from "@/lib/constants";
 import { getFeaturedProducts } from "@/lib/store";
 
@@ -220,14 +221,7 @@ export default async function HomePage() {
         <p className="mx-auto mt-4 max-w-xl text-sm leading-8 text-text-muted">
           New arrivals, stories from the studio, early access for members.
         </p>
-        <form className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
-          <input
-            type="email"
-            placeholder="Your email address"
-            className="h-12 flex-1 border border-clay bg-transparent px-4 text-sm outline-none placeholder:text-text-muted"
-          />
-          <Button type="submit">Join</Button>
-        </form>
+        <NewsletterSignupForm />
       </section>
     </>
   );

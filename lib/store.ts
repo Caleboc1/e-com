@@ -3,7 +3,7 @@ import { OrderStatus, type Prisma } from "@prisma/client";
 
 import { mockMetrics, mockOrders, mockProducts } from "@/lib/mock-data";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
-import type { DashboardMetrics, OrderRecord, Product, StoreSettings } from "@/types";
+import type { DashboardMetrics, OrderRecord, Product, StoreSettings, SubscriberRecord } from "@/types";
 
 function asStringArray(value: Prisma.JsonValue | null | undefined) {
   return Array.isArray(value) ? value.map((item) => String(item)) : [];
@@ -200,5 +200,30 @@ export async function getStoreSettings(): Promise<StoreSettings> {
   } catch (error) {
     console.error("Failed to fetch store settings via Prisma:", error);
     return defaultStoreSettings;
+  }
+}
+
+export async function getSubscribers(): Promise<SubscriberRecord[]> {
+  noStore();
+
+  if (!hasDatabaseUrl()) {
+    return [];
+  }
+
+  try {
+    const data = await prisma.subscriber.findMany({
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return data.map((subscriber) => ({
+      id: subscriber.id,
+      email: subscriber.email,
+      created_at: subscriber.createdAt.toISOString()
+    }));
+  } catch (error) {
+    console.error("Failed to fetch subscribers via Prisma:", error);
+    return [];
   }
 }

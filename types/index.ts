@@ -106,3 +106,9 @@ export interface ActionResult {
   message?: string;
   timestamp?: number;
 }
+
+export interface SubscriberRecord {
+  id: string;
+  email: string;
+  created_at: string;
+}

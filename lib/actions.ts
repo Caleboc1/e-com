@@ -4,6 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { ProductCategory, ProductPrint } from "@prisma/client";
+import { z } from "zod";
 
 import { getAdminSession } from "@/lib/auth";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
@@ -29,6 +30,10 @@ function actionError(message: string): ActionResult {
     timestamp: Date.now()
   };
 }
+
+const newsletterSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Enter a valid email address.")
+});
 
 async function saveUploadedFile(file: File, prefix: string) {
   if (!file || file.size === 0) {
@@ -288,4 +293,48 @@ export async function updateStoreSettingsAction(
   revalidatePath("/admin");
 
   return actionSuccess("Store settings updated.");
+}
+
+export async function subscribeAction(previousState: ActionResult = idleResult, formData: FormData): Promise<ActionResult> {
+  void previousState;
+
+  if (!hasDatabaseUrl()) {
+    return actionError("Newsletter signup is not available right now.");
+  }
+
+  const parsed = newsletterSchema.safeParse({
+    email: String(formData.get("email") ?? "")
+  });
+
+  if (!parsed.success) {
+    return actionError(parsed.error.issues[0]?.message ?? "Enter a valid email address.");
+  }
+
+  try {
+    const subscriber = await prisma.subscriber.findUnique({
+      where: {
+        email: parsed.data.email
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (subscriber) {
+      return actionSuccess("This email is already on the list.");
+    }
+
+    await prisma.subscriber.create({
+      data: {
+        email: parsed.data.email
+      }
+    });
+
+    revalidatePath("/admin");
+
+    return actionSuccess("You are on the list.");
+  } catch (error) {
+    console.error("Failed to save subscriber:", error);
+    return actionError("Could not save your email right now.");
+  }
 }

@@ -23,10 +23,12 @@ const initialActionState: ActionResult = {
 
 export function AdminDashboardClient({
   products,
-  orders
+  orders,
+  subscribers
 }: {
   products: Product[];
   orders: OrderRecord[];
+  subscribers: import("@/types").SubscriberRecord[];
 }) {
   const [productModal, setProductModal] = useState<ProductModalState>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
@@ -42,12 +44,81 @@ export function AdminDashboardClient({
 
         <div className="space-y-8">
           <OrderListCard orders={orders} onView={setSelectedOrder} />
+          <SubscriberListCard subscribers={subscribers} />
         </div>
       </section>
 
       <ProductModal state={productModal} onClose={() => setProductModal(null)} />
       <OrderModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
     </>
+  );
+}
+
+function SubscriberListCard({ subscribers }: { subscribers: import("@/types").SubscriberRecord[] }) {
+  const { showToast } = useToast();
+  const [isCopying, setIsCopying] = useState(false);
+
+  async function handleCopyAll() {
+    if (subscribers.length === 0 || isCopying) {
+      return;
+    }
+
+    try {
+      setIsCopying(true);
+      await navigator.clipboard.writeText(subscribers.map((subscriber) => subscriber.email).join(", "));
+      showToast({
+        title: "Subscriber emails copied.",
+        variant: "success"
+      });
+    } catch (error) {
+      console.error("Failed to copy subscriber emails:", error);
+      showToast({
+        title: "Could not copy subscriber emails.",
+        variant: "error"
+      });
+    } finally {
+      setIsCopying(false);
+    }
+  }
+
+  return (
+    <div className="border border-linen-dark bg-white">
+      <div className="flex items-center justify-between gap-4 border-b border-linen-dark px-6 py-5">
+        <div>
+          <h2 className="font-display text-3xl font-light">Subscribers</h2>
+          <p className="mt-1 text-sm text-text-muted">
+            {subscribers.length} {subscribers.length === 1 ? "email" : "emails"} collected from the home page signup.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleCopyAll}
+          disabled={subscribers.length === 0 || isCopying}
+          className="border border-clay px-4 py-3 text-[0.68rem] uppercase tracking-[0.18em] text-charcoal transition-colors hover:border-charcoal disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isCopying ? "Copying..." : "Copy All"}
+        </button>
+      </div>
+
+      <div className="max-h-[380px] overflow-y-auto">
+        {subscribers.length > 0 ? (
+          <ul className="divide-y divide-linen-dark">
+            {subscribers.map((subscriber) => (
+              <li key={subscriber.id} className="flex items-start justify-between gap-4 px-6 py-4">
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-charcoal">{subscriber.email}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.12em] text-text-muted">
+                    {new Date(subscriber.created_at).toLocaleDateString("en-NG")}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="px-6 py-10 text-sm text-text-muted">No subscriber emails yet.</div>
+        )}
+      </div>
+    </div>
   );
 }
 
