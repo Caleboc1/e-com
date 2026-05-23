@@ -58,8 +58,8 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-6">
-        <Link href="/" className="font-display text-[1.6rem] tracking-[0.3em]">
-          SAllA
+        <Link href="/" className="font-body text-[1.35rem] font-medium tracking-[0.38em]">
+          SAIIA
         </Link>
 
         <ul className="hidden items-center md:flex">

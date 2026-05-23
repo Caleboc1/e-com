@@ -34,9 +34,9 @@ export const FOOTER_COLUMNS = [
     title: "Help",
     links: [
       { href: "/about#sizing", label: "Sizing Guide" },
-      { href: "/about#shipping", label: "Shipping & Returns" },
-      { href: "/about#care", label: "Care Instructions" },
-      { href: "/about#contact", label: "Contact Us" },
+      { href: "/shipping-returns", label: "Shipping & Returns" },
+      { href: "/care-instructions", label: "Care Instructions" },
+      { href: "/contact", label: "Contact Us" },
       { href: "/about#faq", label: "FAQ" }
     ]
   }
