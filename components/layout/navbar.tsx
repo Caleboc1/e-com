@@ -50,6 +50,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  
   return (
     <nav
       className={cn(
