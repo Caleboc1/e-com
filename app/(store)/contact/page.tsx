@@ -8,8 +8,8 @@ export default function ContactPage() {
       intro="For order support, sizing help, stock enquiries, collaborations, or press, reach out and the SAIIA team will get back to you as soon as possible."
     >
       <HelpSection title="Customer Care">
-        <p>Email: hello@saiia.store</p>
-        <p>Phone: +234 (0) 800 000 0000</p>
+        <p>Email: hello@saiiaclothing.com</p>
+        <p>Phone: +2349062926265</p>
         <p>Hours: Monday to Friday, 9:00 AM to 5:00 PM WAT</p>
       </HelpSection>
 
