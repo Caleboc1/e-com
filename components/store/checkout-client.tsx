@@ -126,7 +126,7 @@ export function CheckoutClient({ paymentState }: { paymentState?: string }) {
       <div className="mb-10">
         <span className="section-tag">Checkout</span>
         <h1 className="font-display text-[clamp(2.8rem,5vw,4.5rem)] font-light leading-none">
-          Delivery before
+          Delivery details before
           <br />
           payment.
         </h1>
