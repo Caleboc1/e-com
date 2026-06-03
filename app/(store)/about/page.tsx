@@ -9,14 +9,14 @@ export default function AboutPage() {
       </h1>
       <div className="mt-10 grid gap-10 md:grid-cols-2">
         <p className="text-sm leading-8 text-text-muted">
-        SAIIA builds effortless essentials around natural fibres, local craft, and silhouettes that move with the body.
-The idea began with a simple search for pieces that felt easy to wear every day; clothes you could throw on without thinking, yet still feel confident, youthful, and put together in.
-At the same time, we found ourselves thinking about the next generation. Children grow quickly, their needs change constantly, and too often clothing feels temporary. We wanted to create pieces that embraced simplicity; easy to wear, easy to care for, and made to be enjoyed, shared, and passed on.
-Inspired by the artistry of Nigerian Adire and the beauty of thoughtful craftsmanship, SAIIA brings together heritage and modern living. We work with natural fibres and locally crafted textiles to create timeless pieces designed for real life.
+        SAIIA builds effortless essentials around natural fibres, local craft, and silhouettes that move with the body. <br/>
+The idea began with a simple search for pieces that felt easy to wear every day; clothes you could throw on without thinking, yet still feel confident, youthful, and put together in. <br/>
+At the same time, we found ourselves thinking about the next generation. Children grow quickly, their needs change constantly, and too often clothing feels temporary. We wanted to create pieces that embraced simplicity; easy to wear, easy to care for, and made to be enjoyed, shared, and passed on.<br/>
+Inspired by the artistry of Nigerian Adire and the beauty of thoughtful craftsmanship, SAIIA brings together heritage and modern living. We work with natural fibres and locally crafted textiles to create timeless pieces designed for real life.<br/>
  </p>
         <p className="text-sm leading-8 text-text-muted">
-        Whether it&apos;s an everyday essential, something for a weekend away, or a piece you&apos;ll return to season after season, our focus remains the same: creating clothing that feels effortless, comfortable, and beautifully made.
-By focusing on thoughtful design rather than fleeting trends, we believe in buying less and choosing well. Pieces that are worn often, travel easily, and become part of the stories we carry with us.
+        Whether it&apos;s an everyday essential, something for a weekend away, or a piece you&apos;ll return to season after season, our focus remains the same: creating clothing that feels effortless, comfortable, and beautifully made.<br/>
+By focusing on thoughtful design rather than fleeting trends, we believe in buying less and choosing well. Pieces that are worn often, travel easily, and become part of the stories we carry with us.<br/>
 SAIIA is a celebration of simplicity, craftsmanship, and the ease of getting dressed well. </p>
       </div>
       <section className="mt-24 grid gap-16 md:grid-cols-[1fr_1.2fr]">
