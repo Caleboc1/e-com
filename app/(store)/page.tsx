@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AdirePattern } from "@/components/store/adire-pattern";
 import { NewsletterSignupForm } from "@/components/store/newsletter-signup-form";
 import { ProductCard } from "@/components/store/product-card";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { TICKER_ITEMS } from "@/lib/constants";
 import { getFeaturedProducts } from "@/lib/store";
@@ -43,7 +44,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center overflow-hidden bg-adire-blue">
+        <div className="relative flex items-center justify-center overflow-hidden bg-adire-blue px-6 py-20">
           <svg className="absolute inset-0 h-full w-full opacity-[0.18]" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
               <pattern id="hero-adire" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
@@ -56,12 +57,22 @@ export default async function HomePage() {
             </defs>
             <rect width="400" height="600" fill="url(#hero-adire)" />
           </svg>
-          <Link
-            href="#adire"
-            className="relative inline-flex border border-white/40 px-8 py-4 text-[0.7rem] uppercase tracking-[0.2em] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            Explore Adire
-          </Link>
+          <div className="relative max-w-md text-center text-[#ede8df]">
+            <Badge variant="dark" className="mx-auto mb-2">
+              Adire · Six Colourways
+            </Badge>
+           
+            <p className="mx-auto mt-8 max-w-sm text-sm leading-8 text-white/70">
+              Indigo, terracotta, forest green, dusty rose, saffron. Each Adire piece draws on centuries-old Yoruba
+              dyeing craft, reinterpreted in a contemporary spectrum.
+            </p>
+            <Link
+              href="#adire"
+              className="mt-10 inline-flex border border-white/40 px-8 py-4 text-[0.7rem] uppercase tracking-[0.2em] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              Explore Adire
+            </Link>
+          </div>
         </div>
       </section>
 
