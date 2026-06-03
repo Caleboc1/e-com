@@ -4,7 +4,7 @@ import { OrderStatus, type Prisma } from "@prisma/client";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
 import { getStoreSettings } from "@/lib/store";
 import { getCurrencyForCountry } from "@/lib/storefront";
-import { getPaystackAmountInSubunits } from "@/lib/utils";
+import { getDeliveryFee, getPaystackAmountInSubunits } from "@/lib/utils";
 import type { CartItem, DeliveryDetails, OrderItem } from "@/types";
 
 export async function POST(request: Request) {
@@ -57,10 +57,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Some cart items are no longer available." }, { status: 400 });
   }
 
-  const amount = cartItems.reduce((sum, item) => {
+  const itemsTotal = cartItems.reduce((sum, item) => {
     const product = productMap.get(item.productId);
     return sum + (product?.price ?? item.price) * item.quantity;
   }, 0);
+  const deliveryFee = getDeliveryFee(delivery.country, delivery.state, settings);
+  const amount = itemsTotal + deliveryFee;
   const chargedAmount = getPaystackAmountInSubunits(amount, currency, settings);
   const reference = `SAIIA_${Date.now()}`;
   const orderItems: OrderItem[] = cartItems.map((item) => {

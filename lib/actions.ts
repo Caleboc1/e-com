@@ -270,6 +270,9 @@ export async function updateStoreSettingsAction(
 
   const usdRate = Number(formData.get("usdRate") ?? 0);
   const ghsRate = Number(formData.get("ghsRate") ?? 0);
+  const lagosDeliveryFee = Number(formData.get("lagosDeliveryFee") ?? 0);
+  const nigeriaDeliveryFee = Number(formData.get("nigeriaDeliveryFee") ?? 0);
+  const internationalDeliveryFee = Number(formData.get("internationalDeliveryFee") ?? 0);
 
   if (!Number.isFinite(usdRate) || usdRate <= 0) {
     return actionError("Enter a valid USD rate.");
@@ -279,18 +282,36 @@ export async function updateStoreSettingsAction(
     return actionError("Enter a valid GHS rate.");
   }
 
+  if (!Number.isFinite(lagosDeliveryFee) || lagosDeliveryFee < 0) {
+    return actionError("Enter a valid Lagos delivery fee.");
+  }
+
+  if (!Number.isFinite(nigeriaDeliveryFee) || nigeriaDeliveryFee < 0) {
+    return actionError("Enter a valid Nigeria delivery fee.");
+  }
+
+  if (!Number.isFinite(internationalDeliveryFee) || internationalDeliveryFee < 0) {
+    return actionError("Enter a valid international delivery fee.");
+  }
+
   await prisma.storeSettings.upsert({
     where: {
       id: "default"
     },
     update: {
       usdRate,
-      ghsRate
+      ghsRate,
+      lagosDeliveryFee,
+      nigeriaDeliveryFee,
+      internationalDeliveryFee
     },
     create: {
       id: "default",
       usdRate,
-      ghsRate
+      ghsRate,
+      lagosDeliveryFee,
+      nigeriaDeliveryFee,
+      internationalDeliveryFee
     }
   });
 

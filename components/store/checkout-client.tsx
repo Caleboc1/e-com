@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useStorefront } from "@/components/store/storefront-provider";
+import { getDeliveryFee } from "@/lib/utils";
 import type { DeliveryDetails } from "@/types";
 
 const DELIVERY_STORAGE_KEY = "saiia-delivery-details";
@@ -27,9 +28,10 @@ const emptyDetails: DeliveryDetails = {
 
 export function CheckoutClient({ paymentState }: { paymentState?: string }) {
   const { items, subtotal } = useCart();
-  const { currency, formatStorePrice } = useStorefront();
+  const { currency, settings, formatStorePrice } = useStorefront();
   const [details, setDetails] = useState<DeliveryDetails>(emptyDetails);
   const [detailsSaved, setDetailsSaved] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(
     paymentState === "failed" ? "Payment was not completed. Review your details and try again." : null
@@ -54,13 +56,7 @@ export function CheckoutClient({ paymentState }: { paymentState?: string }) {
     }
   }, []);
 
-  const shippingMessage = useMemo(() => {
-    if (subtotal >= 150000) {
-      return "You qualify for free shipping.";
-    }
-
-    return `Add ${formatStorePrice(150000 - subtotal)} for free shipping.`;
-  }, [formatStorePrice, subtotal]);
+  const total = deliveryFee !== null ? subtotal + deliveryFee : subtotal;
 
   function updateField<K extends keyof DeliveryDetails>(key: K, value: DeliveryDetails[K]) {
     setDetails((current) => ({
@@ -73,6 +69,7 @@ export function CheckoutClient({ paymentState }: { paymentState?: string }) {
   function saveDetails(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     window.localStorage.setItem(DELIVERY_STORAGE_KEY, JSON.stringify(details));
+    setDeliveryFee(getDeliveryFee(details.country, details.state, settings));
     setDetailsSaved(true);
     setErrorMessage(null);
   }
@@ -199,12 +196,27 @@ export function CheckoutClient({ paymentState }: { paymentState?: string }) {
             </div>
           </div>
 
-          <div className="space-y-2 border-t border-linen-dark pt-4">
+          <div className="space-y-3 border-t border-linen-dark pt-4">
             <div className="flex items-center justify-between text-sm">
               <span className="uppercase tracking-[0.18em] text-clay-dark">Subtotal</span>
               <span className="text-earth">{formatStorePrice(subtotal)}</span>
             </div>
-            <p className="text-sm text-text-muted">{shippingMessage}</p>
+            {deliveryFee !== null ? (
+              <div className="flex items-center justify-between text-sm">
+                <span className="uppercase tracking-[0.18em] text-clay-dark">Delivery</span>
+                <span className="text-earth">
+                  {deliveryFee === 0 ? "Free" : formatStorePrice(deliveryFee)}
+                </span>
+              </div>
+            ) : (
+              <p className="text-sm text-text-muted">Delivery fee will be shown after saving your details.</p>
+            )}
+            {deliveryFee !== null && (
+              <div className="flex items-center justify-between border-t border-linen-dark pt-3 text-sm font-medium">
+                <span className="uppercase tracking-[0.18em] text-charcoal">Total</span>
+                <span className="text-charcoal">{formatStorePrice(total)}</span>
+              </div>
+            )}
             {currency !== "NGN" ? (
               <p className="text-xs uppercase tracking-[0.14em] text-text-muted">
                 Prices are shown in {currency}. Paystack will charge {currency}.

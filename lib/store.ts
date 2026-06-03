@@ -195,7 +195,10 @@ export async function getStoreSettings(): Promise<StoreSettings> {
 
     return {
       usdRate: settings.usdRate,
-      ghsRate: settings.ghsRate
+      ghsRate: settings.ghsRate,
+      lagosDeliveryFee: settings.lagosDeliveryFee,
+      nigeriaDeliveryFee: settings.nigeriaDeliveryFee,
+      internationalDeliveryFee: settings.internationalDeliveryFee
     };
   } catch (error) {
     console.error("Failed to fetch store settings via Prisma:", error);

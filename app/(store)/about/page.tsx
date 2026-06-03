@@ -9,16 +9,17 @@ export default function AboutPage() {
       </h1>
       <div className="mt-10 grid gap-10 md:grid-cols-2">
         <p className="text-sm leading-8 text-text-muted">
-          SAIIA builds effortless essentials around natural fibres, local craft, and silhouettes that move with the
-          body. The reference direction from the supplied files has been preserved here: the same warm neutrals, the
-          Adire blue contrast, and the same editorial pacing between commerce and story.
+          SAIIA builds effortless essentials around natural fibres, local craft, and silhouettes that move with the body.
+          The idea began with a simple search for pieces that felt easy to wear every day, clothes you could throw on without thinking, yet still feel confident, youthful, and put together in.
+          At the same time, we found ourselves thinking about the next generation. Children grow quickly, their needs change constantly, and too often clothing feels temporary. We wanted to create pieces that embraced simplicity, easy to wear, easy to care for, and made to be enjoyed, shared, and passed on.
+          Inspired by the artistry of Nigerian Adire and the beauty of thoughtful craftsmanship, SAIIA brings together heritage and modern living. We work with natural fibres and locally crafted textiles to create timeless pieces designed for real life.
         </p>
         <p className="text-sm leading-8 text-text-muted">
-          This route is also where help content can expand later: sizing, returns, care instructions, FAQ, and contact
-          blocks. The shared storefront shell already keeps it visually consistent with the rest of the site.
+          Whether it's an everyday essential, something for a weekend away, or a piece you'll return to season after season, our focus remains the same: creating clothing that feels effortless, comfortable, and beautifully made.
+          By focusing on thoughtful design rather than fleeting trends, we believe in buying less and choosing well. Pieces that are worn often, travel easily, and become part of the stories we carry with us.
+          SAIIA is a celebration of simplicity, craftsmanship, and the ease of getting dressed well.
         </p>
       </div>
-
       <section className="mt-24 grid gap-16 md:grid-cols-[1fr_1.2fr]">
         <div className="max-w-md">
           <span className="section-tag">Our Philosophy</span>

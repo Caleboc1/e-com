@@ -103,6 +103,9 @@ export type StoreCurrency = "NGN" | "GHS" | "USD";
 export interface StoreSettings {
   usdRate: number;
   ghsRate: number;
+  lagosDeliveryFee: number;
+  nigeriaDeliveryFee: number;
+  internationalDeliveryFee: number;
 }
 
 export interface ActionResult {

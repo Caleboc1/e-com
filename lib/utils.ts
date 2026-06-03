@@ -9,8 +9,20 @@ export function cn(...inputs: ClassValue[]) {
 
 export const defaultStoreSettings: StoreSettings = {
   usdRate: 1600,
-  ghsRate: 100
+  ghsRate: 100,
+  lagosDeliveryFee: 0,
+  nigeriaDeliveryFee: 0,
+  internationalDeliveryFee: 0
 };
+
+export function getDeliveryFee(country: string, state: string, settings: StoreSettings): number {
+  const c = country.trim().toLowerCase();
+  const s = state.trim().toLowerCase();
+  const isNigeria = c === "nigeria" || c === "ng" || c === "nga";
+  if (!isNigeria) return settings.internationalDeliveryFee;
+  if (s === "lagos") return settings.lagosDeliveryFee;
+  return settings.nigeriaDeliveryFee;
+}
 
 function getCurrencyLocale(currency: StoreCurrency) {
   if (currency === "USD") {
