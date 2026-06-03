@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { ProductCard } from "@/components/store/product-card";
-import type { Product, ProductCategory, ProductPrint } from "@/types";
+import type { Product, ProductPrint } from "@/types";
 
 const sortOptions = [
   { value: "newest", label: "Newest" },
@@ -21,35 +21,18 @@ export function ShopClient({
   initialCategory?: string;
   initialPrint?: string;
 }) {
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
+  const [selectedCategories] = useState<Set<string>>(
     initialCategory ? new Set([initialCategory]) : new Set()
   );
   const [selectedPrints, setSelectedPrints] = useState<Set<string>>(
     initialPrint ? new Set([initialPrint]) : new Set()
   );
   const [sortBy, setSortBy] = useState<(typeof sortOptions)[number]["value"]>("newest");
-
-  useEffect(() => {
-    setSelectedCategories(initialCategory ? new Set([initialCategory]) : new Set());
-  }, [initialCategory]);
+  const [colsPerRow, setColsPerRow] = useState<3 | 5>(3);
 
   useEffect(() => {
     setSelectedPrints(initialPrint ? new Set([initialPrint]) : new Set());
   }, [initialPrint]);
-
-  function toggleSetValue(setter: React.Dispatch<React.SetStateAction<Set<string>>>, value: string) {
-    setter((current) => {
-      const next = new Set(current);
-
-      if (next.has(value)) {
-        next.delete(value);
-      } else {
-        next.add(value);
-      }
-
-      return next;
-    });
-  }
 
   const visibleProducts = useMemo(() => {
     let list = products;
@@ -73,7 +56,7 @@ export function ShopClient({
     return list;
   }, [products, selectedCategories, selectedPrints, sortBy]);
 
-  const activeFilterCount = selectedCategories.size + selectedPrints.size;
+  const activeFilterCount = selectedPrints.size;
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 pb-24 md:px-12">
@@ -87,28 +70,28 @@ export function ShopClient({
 
       <div className="grid gap-12 md:grid-cols-[240px_1fr]">
         <aside className="space-y-10 md:sticky md:top-24 md:h-fit">
-          <FilterGroup<ProductCategory>
-            title="Category"
-            values={["women", "men", "kids"]}
-            selected={selectedCategories}
-            labels={{ women: "Women", men: "Men", kids: "Kids" }}
-            onToggle={(value) => toggleSetValue(setSelectedCategories, value)}
-          />
           <FilterGroup<ProductPrint>
             title="Print"
             values={["adire", "plain"]}
             selected={selectedPrints}
             labels={{ adire: "Adire", plain: "Plain & Linen" }}
-            onToggle={(value) => toggleSetValue(setSelectedPrints, value)}
+            onToggle={(value) => {
+              setSelectedPrints((current) => {
+                const next = new Set(current);
+                if (next.has(value)) {
+                  next.delete(value);
+                } else {
+                  next.add(value);
+                }
+                return next;
+              });
+            }}
           />
           {activeFilterCount > 0 ? (
             <button
               type="button"
               className="border-t border-linen-dark pt-5 text-[0.7rem] uppercase tracking-[0.18em] text-clay-dark transition-colors hover:text-charcoal"
-              onClick={() => {
-                setSelectedCategories(new Set());
-                setSelectedPrints(new Set());
-              }}
+              onClick={() => setSelectedPrints(new Set())}
             >
               Clear all ({activeFilterCount})
             </button>
@@ -127,9 +110,35 @@ export function ShopClient({
               ))}
             </select>
           </div>
+          <div className="border-t border-linen-dark pt-8">
+            <span className="section-tag mb-4">View</span>
+            <div className="flex gap-3">
+              {([3, 5] as const).map((cols) => (
+                <button
+                  key={cols}
+                  type="button"
+                  onClick={() => setColsPerRow(cols)}
+                  className={`flex items-center gap-1.5 text-[0.7rem] uppercase tracking-[0.18em] transition-colors ${
+                    colsPerRow === cols ? "text-charcoal" : "text-earth hover:text-charcoal"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 rounded-full border border-clay ${colsPerRow === cols ? "border-charcoal bg-charcoal" : ""}`}
+                  />
+                  {cols}
+                </button>
+              ))}
+            </div>
+          </div>
         </aside>
 
-        <section className="grid gap-px bg-linen-dark md:grid-cols-2 xl:grid-cols-3">
+        <section
+          className={`grid gap-px bg-linen-dark ${
+            colsPerRow === 5
+              ? "md:grid-cols-3 xl:grid-cols-5"
+              : "md:grid-cols-2 xl:grid-cols-3"
+          }`}
+        >
           {visibleProducts.length > 0 ? (
             visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)
           ) : (

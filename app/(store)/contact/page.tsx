@@ -20,14 +20,6 @@ export default function ContactPage() {
         </p>
         <p>We aim to respond to all order-related messages within 1 business day.</p>
       </HelpSection>
-
-      <HelpSection title="Studio & Partnerships">
-        <p>
-          For wholesale, wardrobe pulls, collaborations, and press enquiries, contact the studio team at
-          partnerships@saiia.store.
-        </p>
-        <p>Based in Lagos, Nigeria.</p>
-      </HelpSection>
     </HelpPageShell>
   );
 }

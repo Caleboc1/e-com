@@ -28,5 +28,7 @@ export async function getPreferredCurrency(): Promise<StoreCurrency> {
   const headerStore = await headers();
   const country = COUNTRY_HEADER_KEYS.map((key) => headerStore.get(key)?.toUpperCase()).find(Boolean);
 
+  if (!country) return "NGN";
+
   return getCurrencyForCountry(country);
 }

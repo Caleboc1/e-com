@@ -8,7 +8,7 @@ export function Footer() {
       <footer className="bg-charcoal px-6 py-16 md:px-12">
         <div className="mx-auto grid max-w-[1400px] gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="font-display text-[1.4rem] tracking-[0.3em] text-[#ede8df]">
+            <Link href="/" className="font-body text-[1.35rem] font-medium tracking-[0.38em] text-[#ede8df]">
               SAIIA
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-8 text-white/35">

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { AdirePattern } from "@/components/store/adire-pattern";
 import { NewsletterSignupForm } from "@/components/store/newsletter-signup-form";
 import { ProductCard } from "@/components/store/product-card";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { TICKER_ITEMS } from "@/lib/constants";
 import { getFeaturedProducts } from "@/lib/store";
@@ -23,7 +22,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="grid min-h-screen md:grid-cols-2">
-        <div className="relative flex flex-col justify-end overflow-hidden bg-linen px-6 pb-20 pt-32 md:px-16">
+        <div className="relative flex flex-col justify-end overflow-hidden bg-linen px-6 pb-20 pt-10 md:px-16">
           <div className="linen-grid absolute inset-0" />
           <div className="relative max-w-lg animate-fade-up">
             <span className="section-tag">Collection No. 01</span>
@@ -44,7 +43,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center overflow-hidden bg-adire-blue px-6 py-20">
+        <div className="relative flex items-center justify-center overflow-hidden bg-adire-blue">
           <svg className="absolute inset-0 h-full w-full opacity-[0.18]" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
               <pattern id="hero-adire" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
@@ -57,28 +56,12 @@ export default async function HomePage() {
             </defs>
             <rect width="400" height="600" fill="url(#hero-adire)" />
           </svg>
-          <div className="relative max-w-md text-center text-[#ede8df]">
-            <Badge variant="dark" className="mx-auto mb-6">
-              Adire · Six Colourways
-            </Badge>
-            <h2 className="font-display text-[clamp(2.8rem,5vw,4.5rem)] font-light leading-none">
-              Rooted in
-              <br />
-              <em>tradition</em>,
-              <br />
-              worn today.
-            </h2>
-            <p className="mx-auto mt-8 max-w-sm text-sm leading-8 text-white/70">
-              Indigo, terracotta, forest green, dusty rose, saffron. Each Adire piece draws on centuries-old Yoruba
-              dyeing craft, reinterpreted in a contemporary spectrum.
-            </p>
-            <Link
-              href="#adire"
-              className="mt-10 inline-flex border border-white/40 px-8 py-4 text-[0.7rem] uppercase tracking-[0.2em] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Explore Adire
-            </Link>
-          </div>
+          <Link
+            href="#adire"
+            className="relative inline-flex border border-white/40 px-8 py-4 text-[0.7rem] uppercase tracking-[0.2em] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            Explore Adire
+          </Link>
         </div>
       </section>
 
@@ -92,22 +75,6 @@ export default async function HomePage() {
           ))}
         </div>
       </div>
-
-      <section id="shop" className="grid md:grid-cols-3">
-        {[
-          { label: "Women", sub: "T-Shirts · Dresses →", href: "/shop?category=women", bg: "bg-linen text-charcoal" },
-          { label: "Men", sub: "T-Shirts →", href: "/shop?category=men", bg: "bg-charcoal text-white" },
-          { label: "Kids", sub: "Girls & Boys →", href: "/shop?category=kids", bg: "bg-clay text-charcoal" }
-        ].map((strip) => (
-          <Link key={strip.label} href={strip.href} className={`relative min-h-48 overflow-hidden px-8 py-10 ${strip.bg}`}>
-            <div className="linen-grid absolute inset-0 opacity-40" />
-            <div className="relative flex h-full flex-col justify-end">
-              <span className="font-display text-4xl font-light">{strip.label}</span>
-              <span className="mt-2 text-[0.72rem] uppercase tracking-[0.18em]">{strip.sub}</span>
-            </div>
-          </Link>
-        ))}
-      </section>
 
       <section className="px-6 py-24 md:px-12">
         <div className="pb-12 text-center">
@@ -123,42 +90,6 @@ export default async function HomePage() {
           <Link href="/shop" className={buttonVariants()}>
             View All Pieces
           </Link>
-        </div>
-      </section>
-
-      <section id="about" className="grid gap-16 px-6 py-24 md:grid-cols-[1fr_1.2fr] md:px-12">
-        <div className="max-w-md">
-          <span className="section-tag">Our Philosophy</span>
-          <h2 className="font-display text-[clamp(2.5rem,5vw,4.4rem)] font-light leading-none">
-            Made with
-            <br />
-            intention.
-            <br />
-            Worn with <em>ease</em>.
-          </h2>
-          <p className="mt-8 text-sm leading-8 text-text-muted">
-            SAIIA is built on the belief that everyday clothing should feel considered, not complicated. We design
-            for the in-between moments, the meetings, the markets, the mornings when getting dressed should be
-            effortless.
-          </p>
-          <p className="mt-6 text-sm leading-8 text-text-muted">
-            Each piece is designed in Lagos and crafted from natural fibres that breathe, move, and soften with time.
-          </p>
-        </div>
-
-        <div className="grid gap-px bg-linen-dark md:grid-cols-2">
-          {[
-            ["01", "Natural Fibres", "Linen, cotton, and organic blends that work with your body and the climate."],
-            ["02", "Considered Cuts", "Relaxed silhouettes designed to flatter without effort."],
-            ["03", "Local Craft", "Made with artisans in Lagos and Abeokuta who bring generations of skill."],
-            ["04", "Timeless Value", "Investment pieces priced fairly, designed to last beyond seasons."]
-          ].map(([number, title, copy]) => (
-            <div key={number} className="bg-white p-8">
-              <span className="text-[0.7rem] uppercase tracking-[0.2em] text-clay-dark">{number}</span>
-              <h3 className="mt-6 font-display text-3xl font-light">{title}</h3>
-              <p className="mt-4 text-sm leading-8 text-text-muted">{copy}</p>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -178,7 +109,7 @@ export default async function HomePage() {
                 Adire colour.
               </p>
               <p className="mt-6 text-sm leading-8 text-white/65">
-                The patterns are rooted in tradition. The colours change every season. Nothing here is accidental.
+                The colours are rooted in tradition. The patterns change every season. Nothing here is accidental.
               </p>
             </div>
 

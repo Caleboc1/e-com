@@ -27,7 +27,6 @@ export const FOOTER_COLUMNS = [
     links: [
       { href: "/about", label: "Our Story" },
       { href: "/about#craft", label: "The Craft" },
-      { href: "/about#sustainability", label: "Sustainability" }
     ]
   },
   {
@@ -37,7 +36,6 @@ export const FOOTER_COLUMNS = [
       { href: "/shipping-returns", label: "Shipping & Returns" },
       { href: "/care-instructions", label: "Care Instructions" },
       { href: "/contact", label: "Contact Us" },
-      { href: "/about#faq", label: "FAQ" }
     ]
   }
 ] as const;
