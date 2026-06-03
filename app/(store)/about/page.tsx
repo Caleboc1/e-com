@@ -15,7 +15,7 @@ At the same time, we found ourselves thinking about the next generation. Childre
 Inspired by the artistry of Nigerian Adire and the beauty of thoughtful craftsmanship, SAIIA brings together heritage and modern living. We work with natural fibres and locally crafted textiles to create timeless pieces designed for real life.
  </p>
         <p className="text-sm leading-8 text-text-muted">
-        Whether it's an everyday essential, something for a weekend away, or a piece you'll return to season after season, our focus remains the same: creating clothing that feels effortless, comfortable, and beautifully made.
+        Whether it&apos;s an everyday essential, something for a weekend away, or a piece you&apos;ll return to season after season, our focus remains the same: creating clothing that feels effortless, comfortable, and beautifully made.
 By focusing on thoughtful design rather than fleeting trends, we believe in buying less and choosing well. Pieces that are worn often, travel easily, and become part of the stories we carry with us.
 SAIIA is a celebration of simplicity, craftsmanship, and the ease of getting dressed well. </p>
       </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useCart } from "@/components/store/cart-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
