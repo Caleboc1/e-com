@@ -1,7 +1,6 @@
 export const NAV_LINKS = [
   { href: "/shop?category=women", label: "Women" },
   { href: "/shop?category=men", label: "Men" },
-  { href: "/shop?category=kids", label: "Kids" },
   { href: "/shop?print=adire", label: "Adire" },
   { href: "/about", label: "About" }
 ] as const;
