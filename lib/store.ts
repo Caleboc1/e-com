@@ -3,7 +3,8 @@ import { OrderStatus, type Prisma } from "@prisma/client";
 
 import { mockMetrics, mockOrders, mockProducts } from "@/lib/mock-data";
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
-import type { DashboardMetrics, OrderRecord, Product, StoreSettings, SubscriberRecord } from "@/types";
+import type { DashboardMetrics, OrderRecord, Product, StoreCurrency, StoreSettings, SubscriberRecord } from "@/types";
+import { defaultStoreSettings } from "@/lib/utils";
 
 function asStringArray(value: Prisma.JsonValue | null | undefined) {
   return Array.isArray(value) ? value.map((item) => String(item)) : [];
@@ -161,6 +162,8 @@ export async function getOrders(): Promise<OrderRecord[]> {
       delivery_country: order.deliveryCountry ?? undefined,
       delivery_notes: order.deliveryNotes ?? undefined,
       amount: order.amount,
+      currency: order.currency as StoreCurrency,
+      charged_amount: order.chargedAmount ?? undefined,
       status: order.status,
       paystack_reference: order.paystackReference ?? undefined,
       created_at: order.createdAt.toISOString(),
@@ -171,10 +174,6 @@ export async function getOrders(): Promise<OrderRecord[]> {
     return [];
   }
 }
-
-const defaultStoreSettings: StoreSettings = {
-  usdRate: 1600
-};
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   noStore();
@@ -195,7 +194,8 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     }
 
     return {
-      usdRate: settings.usdRate
+      usdRate: settings.usdRate,
+      ghsRate: settings.ghsRate
     };
   } catch (error) {
     console.error("Failed to fetch store settings via Prisma:", error);

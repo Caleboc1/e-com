@@ -59,6 +59,8 @@ model Order {
   deliveryCountry   String?
   deliveryNotes     String?
   amount            Int
+  currency          String      @default("NGN")
+  chargedAmount     Int?
   status            OrderStatus @default(pending)
   paystackReference String?     @unique
   items             Json        @default("[]")
@@ -76,6 +78,7 @@ model AdminUser {
 model StoreSettings {
   id        String   @id @default("default")
   usdRate   Float    @default(1600)
+  ghsRate   Float    @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -27,7 +27,7 @@ export function StorefrontProvider({
       value={{
         currency,
         settings,
-        formatStorePrice: (valueInNaira) => formatPrice(valueInNaira, currency, settings.usdRate)
+        formatStorePrice: (valueInNaira) => formatPrice(valueInNaira, currency, settings)
       }}
     >
       {children}

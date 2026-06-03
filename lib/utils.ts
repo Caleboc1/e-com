@@ -1,36 +1,75 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-import type { StoreCurrency } from "@/types";
+import type { StoreCurrency, StoreSettings } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const defaultStoreSettings: StoreSettings = {
+  usdRate: 1600,
+  ghsRate: 100
+};
+
+function getCurrencyLocale(currency: StoreCurrency) {
+  if (currency === "USD") {
+    return "en-US";
+  }
+
+  if (currency === "GHS") {
+    return "en-GH";
+  }
+
+  return "en-NG";
+}
+
+function getCurrencyRate(currency: StoreCurrency, settings: StoreSettings = defaultStoreSettings) {
+  if (currency === "USD") {
+    return Math.max(settings.usdRate, 1);
+  }
+
+  if (currency === "GHS") {
+    return Math.max(settings.ghsRate, 1);
+  }
+
+  return 1;
+}
+
 export function convertNairaToDisplayAmount(
   valueInNaira: number,
   currency: StoreCurrency = "NGN",
-  usdRate = 1600
+  settings: StoreSettings = defaultStoreSettings
 ) {
-  if (currency === "USD") {
-    return valueInNaira / Math.max(usdRate, 1);
-  }
+  return valueInNaira / getCurrencyRate(currency, settings);
+}
 
-  return valueInNaira;
+export function getPaystackAmountInSubunits(
+  valueInNaira: number,
+  currency: StoreCurrency = "NGN",
+  settings: StoreSettings = defaultStoreSettings
+) {
+  return Math.round(convertNairaToDisplayAmount(valueInNaira, currency, settings) * 100);
+}
+
+export function formatCurrencyAmount(amount: number, currency: StoreCurrency = "NGN") {
+  return new Intl.NumberFormat(getCurrencyLocale(currency), {
+    style: "currency",
+    currency,
+    maximumFractionDigits: currency === "NGN" ? 0 : 2
+  }).format(amount);
+}
+
+export function formatCurrencySubunit(amountInSubunits: number, currency: StoreCurrency = "NGN") {
+  return formatCurrencyAmount(amountInSubunits / 100, currency);
 }
 
 export function formatPrice(
   valueInNaira: number,
   currency: StoreCurrency = "NGN",
-  usdRate = 1600
+  settings: StoreSettings = defaultStoreSettings
 ) {
-  const amount = convertNairaToDisplayAmount(valueInNaira, currency, usdRate);
-
-  return new Intl.NumberFormat(currency === "USD" ? "en-US" : "en-NG", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: currency === "USD" ? 2 : 0
-  }).format(amount);
+  return formatCurrencyAmount(convertNairaToDisplayAmount(valueInNaira, currency, settings), currency);
 }
 
 export function slugify(value: string) {

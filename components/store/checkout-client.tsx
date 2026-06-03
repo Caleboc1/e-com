@@ -205,9 +205,9 @@ export function CheckoutClient({ paymentState }: { paymentState?: string }) {
               <span className="text-earth">{formatStorePrice(subtotal)}</span>
             </div>
             <p className="text-sm text-text-muted">{shippingMessage}</p>
-            {currency === "USD" ? (
+            {currency !== "NGN" ? (
               <p className="text-xs uppercase tracking-[0.14em] text-text-muted">
-                Prices are shown in USD. Paystack will charge the naira amount.
+                Prices are shown in {currency}. Paystack will charge {currency}.
               </p>
             ) : null}
           </div>

@@ -9,7 +9,7 @@ import { ProductEditorForm } from "@/components/admin/product-editor-form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toaster";
 import { deleteProductAction } from "@/lib/actions";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrencySubunit, formatPrice } from "@/lib/utils";
 import type { ActionResult, OrderRecord, Product } from "@/types";
 
 type ProductModalState =
@@ -379,7 +379,15 @@ function OrderModal({
           <Detail label="Email" value={order.customer_email} />
           <Detail label="Phone" value={order.customer_phone ?? "Not provided"} />
           <Detail label="Status" value={order.status} />
-          <Detail label="Amount" value={formatPrice(order.amount)} />
+          <Detail
+            label="Amount"
+            value={
+              order.charged_amount
+                ? formatCurrencySubunit(order.charged_amount, order.currency)
+                : formatPrice(order.amount)
+            }
+          />
+          {order.currency !== "NGN" ? <Detail label="Base Amount" value={formatPrice(order.amount)} /> : null}
           <Detail label="Reference" value={order.paystack_reference ?? "Pending"} />
           <Detail
             label="Delivery Address"
@@ -409,7 +417,11 @@ function OrderModal({
                   </div>
                   <div className="text-right text-sm text-earth">
                     <div>{item.quantity} pcs</div>
-                    <div>{formatPrice(item.unit_price)}</div>
+                    <div>
+                      {item.charged_unit_price
+                        ? formatCurrencySubunit(item.charged_unit_price, order.currency)
+                        : formatPrice(item.unit_price)}
+                    </div>
                   </div>
                 </div>
               </div>

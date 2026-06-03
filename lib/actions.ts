@@ -269,9 +269,14 @@ export async function updateStoreSettingsAction(
   }
 
   const usdRate = Number(formData.get("usdRate") ?? 0);
+  const ghsRate = Number(formData.get("ghsRate") ?? 0);
 
   if (!Number.isFinite(usdRate) || usdRate <= 0) {
     return actionError("Enter a valid USD rate.");
+  }
+
+  if (!Number.isFinite(ghsRate) || ghsRate <= 0) {
+    return actionError("Enter a valid GHS rate.");
   }
 
   await prisma.storeSettings.upsert({
@@ -279,11 +284,13 @@ export async function updateStoreSettingsAction(
       id: "default"
     },
     update: {
-      usdRate
+      usdRate,
+      ghsRate
     },
     create: {
       id: "default",
-      usdRate
+      usdRate,
+      ghsRate
     }
   });
 

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { OrderStatus, type Prisma } from "@prisma/client";
 
 import { hasDatabaseUrl, prisma } from "@/lib/prisma";
+import { getStoreSettings } from "@/lib/store";
+import { getCurrencyForCountry } from "@/lib/storefront";
+import { getPaystackAmountInSubunits } from "@/lib/utils";
 import type { CartItem, DeliveryDetails, OrderItem } from "@/types";
 
 export async function POST(request: Request) {
@@ -25,16 +28,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing checkout details." }, { status: 400 });
   }
 
-  const amount = body.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartItems = body.items.filter((item) => Number.isInteger(item.quantity) && item.quantity > 0);
+
+  if (cartItems.length === 0) {
+    return NextResponse.json({ error: "Your bag is empty." }, { status: 400 });
+  }
+
+  const settings = await getStoreSettings();
+  const currency = getCurrencyForCountry(delivery.country);
+  const productIds = [...new Set(cartItems.map((item) => item.productId))];
+  const products = hasDatabaseUrl()
+    ? await prisma.product.findMany({
+        where: {
+          id: {
+            in: productIds
+          }
+        },
+        select: {
+          id: true,
+          name: true,
+          price: true
+        }
+      })
+    : [];
+  const productMap = new Map(products.map((product) => [product.id, product]));
+
+  if (hasDatabaseUrl() && productMap.size !== productIds.length) {
+    return NextResponse.json({ error: "Some cart items are no longer available." }, { status: 400 });
+  }
+
+  const amount = cartItems.reduce((sum, item) => {
+    const product = productMap.get(item.productId);
+    return sum + (product?.price ?? item.price) * item.quantity;
+  }, 0);
+  const chargedAmount = getPaystackAmountInSubunits(amount, currency, settings);
   const reference = `SAIIA_${Date.now()}`;
-  const orderItems: OrderItem[] = body.items.map((item) => ({
-    product_id: item.productId,
-    name: item.name,
-    quantity: item.quantity,
-    unit_price: item.price,
-    size: item.size,
-    color: item.color
-  }));
+  const orderItems: OrderItem[] = cartItems.map((item) => {
+    const product = productMap.get(item.productId);
+    const unitPrice = product?.price ?? item.price;
+
+    return {
+      product_id: item.productId,
+      name: product?.name ?? item.name,
+      quantity: item.quantity,
+      unit_price: unitPrice,
+      charged_unit_price: getPaystackAmountInSubunits(unitPrice, currency, settings),
+      size: item.size,
+      color: item.color
+    };
+  });
 
   if (hasDatabaseUrl()) {
     await prisma.order.create({
@@ -48,6 +90,8 @@ export async function POST(request: Request) {
         deliveryCountry: delivery.country,
         deliveryNotes: delivery.notes ?? "",
         amount,
+        currency,
+        chargedAmount,
         status: OrderStatus.pending,
         paystackReference: reference,
         items: orderItems as unknown as Prisma.InputJsonValue
@@ -70,7 +114,8 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       email: delivery.email,
-      amount: amount * 100,
+      amount: chargedAmount,
+      currency,
       reference,
       callback_url: `${process.env.NEXTAUTH_URL}/api/paystack/verify?reference=${reference}`,
       metadata: {

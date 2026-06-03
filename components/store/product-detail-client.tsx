@@ -90,9 +90,9 @@ export function ProductDetailClient({ product }: { product: Product }) {
           <span className="section-tag">Collection No. 01</span>
           <h1 className="font-display text-[clamp(2rem,3.5vw,2.8rem)] font-light leading-tight">{product.name}</h1>
           <p className="mt-3 text-base text-earth">{formatStorePrice(product.price)}</p>
-          {currency === "USD" ? (
+          {currency !== "NGN" ? (
             <p className="mt-2 text-xs uppercase tracking-[0.14em] text-text-muted">
-              Displayed in USD for international visitors. Checkout is processed in naira.
+              Displayed in {currency} for your location. Checkout will be processed in {currency}.
             </p>
           ) : null}
           <p className="mt-8 max-w-xl text-sm leading-8 text-text-muted">{product.description}</p>

@@ -103,9 +103,9 @@ export function CartDrawer() {
                 ? "You qualify for free shipping."
                 : `Add ${formatStorePrice(150000 - subtotal)} for free shipping.`}
             </p>
-            {currency === "USD" ? (
+            {currency !== "NGN" ? (
               <p className="mb-5 text-xs uppercase tracking-[0.14em] text-text-muted">
-                Prices are shown in USD. Paystack checkout will charge the naira amount.
+                Prices are shown in {currency}. Paystack checkout will charge {currency}.
               </p>
             ) : null}
             <Link href="/checkout" onClick={closeCart} className={`${buttonVariants()} w-full`}>

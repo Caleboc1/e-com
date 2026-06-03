@@ -76,8 +76,8 @@ const products = [
 async function main() {
   await prisma.storeSettings.upsert({
     where: { id: "default" },
-    update: { usdRate: 1600 },
-    create: { id: "default", usdRate: 1600 }
+    update: { usdRate: 1600, ghsRate: 100, usdMarkupPercent: 0 },
+    create: { id: "default", usdRate: 1600, ghsRate: 100, usdMarkupPercent: 0 }
   });
 
   for (const product of products) {

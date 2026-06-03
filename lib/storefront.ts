@@ -10,13 +10,23 @@ const COUNTRY_HEADER_KEYS = [
   "x-country"
 ];
 
+export function getCurrencyForCountry(country: string | null | undefined): StoreCurrency {
+  const normalizedCountry = country?.trim().toUpperCase();
+
+  if (normalizedCountry === "GH" || normalizedCountry === "GHA" || normalizedCountry === "GHANA") {
+    return "GHS";
+  }
+
+  if (normalizedCountry === "NG" || normalizedCountry === "NGA" || normalizedCountry === "NIGERIA") {
+    return "NGN";
+  }
+
+  return "USD";
+}
+
 export async function getPreferredCurrency(): Promise<StoreCurrency> {
   const headerStore = await headers();
   const country = COUNTRY_HEADER_KEYS.map((key) => headerStore.get(key)?.toUpperCase()).find(Boolean);
 
-  if (country && country !== "NG") {
-    return "USD";
-  }
-
-  return "NGN";
+  return getCurrencyForCountry(country);
 }

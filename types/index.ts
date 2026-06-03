@@ -56,6 +56,7 @@ export interface OrderItem {
   name: string;
   quantity: number;
   unit_price: number;
+  charged_unit_price?: number;
   size: string;
   color: string;
 }
@@ -82,6 +83,8 @@ export interface OrderRecord {
   delivery_country?: string;
   delivery_notes?: string;
   amount: number;
+  currency: StoreCurrency;
+  charged_amount?: number;
   status: "pending" | "paid" | "failed";
   paystack_reference?: string;
   created_at: string;
@@ -95,10 +98,11 @@ export interface DashboardMetrics {
   lowStockCount: number;
 }
 
-export type StoreCurrency = "NGN" | "USD";
+export type StoreCurrency = "NGN" | "GHS" | "USD";
 
 export interface StoreSettings {
   usdRate: number;
+  ghsRate: number;
 }
 
 export interface ActionResult {

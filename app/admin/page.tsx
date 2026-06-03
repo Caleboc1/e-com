@@ -65,7 +65,7 @@ export default async function AdminPage() {
               <CardTitle>Store Currency</CardTitle>
             </CardHeader>
             <CardContent>
-              <StoreSettingsForm usdRate={storeSettings.usdRate} />
+              <StoreSettingsForm settings={storeSettings} />
             </CardContent>
           </Card>
 
